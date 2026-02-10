@@ -1,0 +1,63 @@
+name: CI/CD com Testes de Integração
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  test_and_build:
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: test
+
+      POSTGRES_HOST: localhost
+      POSTGRES_DB: educablog
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Secure_Password_For_CI_123!
+      POSTGRES_PORT: 5432
+
+      JWT_SECRET: SEGREDO_FORTE_PARA_PRODUCAO
+      APP_PORT: 3000
+      PORT: 3000
+      ENVIRONMENT: production
+
+
+    services:
+      postgresdb:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: Secure_Password_For_CI_123!
+
+        ports:
+          - 5432:5432
+
+        options: '--health-cmd "pg_isready -U postgres -d postgres" --health-interval 5s --health-timeout 5s --health-retries 5 --health-start-period 10s'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          echo "Aguardando 10s para o Postgres iniciar..."
+          sleep 25
+
+      - name: Run Integration Tests (Vitest)
+        run: npm test

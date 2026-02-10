@@ -1,0 +1,47 @@
+name: README → HTML (GitHub Pages)
+
+on:
+  push:
+    branches: [master]
+    paths: ['**/*.md', '**/*.MD', '.github/workflows/readme-to-pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Debug workspace
+        run: |
+          pwd
+          ls -la
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Converter README → docs/index.html
+        run: |
+          set -e
+          mkdir -p docs
+          READMENAME=$(git ls-files | grep -i '^README\.md$' || true)
+          if [ -z "$READMENAME" ]; then echo "README*.md não encontrado"; exit 1; fi
+          npx --yes marked@12 "$READMENAME" > docs/__content.html
+          cat > docs/__prefix.html <<'HTML'
+          <!doctype html><html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>README</title><base href="../"><style>:root{color-scheme:light dark}body{max-width:900px;margin:40px auto;padding:0 16px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial,sans-serif;line-height:1.6}pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}img{max-width:100%;height:auto}</style></head><body>
+          HTML
+          cat > docs/__suffix.html <<'HTML'
+          </body></html>
+          HTML
+          cat docs/__prefix.html docs/__content.html docs/__suffix.html > docs/index.html
+          rm docs/__prefix.html docs/__content.html docs/__suffix.html
+
+      - name: Commit do HTML gerado
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore(pages): atualizar docs/index.html a partir do README'
+          file_pattern: docs/index.html

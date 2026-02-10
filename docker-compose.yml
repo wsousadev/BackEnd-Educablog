@@ -1,0 +1,36 @@
+services:
+  app:
+    build: .
+    container_name: app_educa_blog
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      postgresdb:
+        condition: service_healthy
+    env_file:
+      - .env
+      - .env.production
+    environment:
+      APP_PORT: ${APP_PORT}
+      POSTGRES_HOST: postgresdb
+      NODE_ENV: ${ENVIRONMENT}
+
+  postgresdb:
+    image: postgres:15-alpine
+    container_name: educablog_db
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+      - .env.production
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  postgres_data:

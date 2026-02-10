@@ -1,0 +1,52 @@
+{
+  "name": "postechfiapsegundaetapa",
+  "version": "0.1.1",
+  "description": "Bem-vindo ao projeto de CRUD da FIAP! Este repositório contém o código-fonte e a configuração do Docker para rodar a aplicação em um ambiente isolado, que inclui os bancos de dados MongoDB, PostgreSQL e MySQL.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "npm run lint && cross-env ENVIRONMENT=development dotenv -e .env.development -e .env nodemon --exec babel-node src/server.js",
+    "dev:watch": "npm run lint && node src/server.js",
+    "jsdocs": "jsdoc /src -r",
+    "lint": "eslint . --ext .js",
+    "test": "dotenv -e .env -e .env.test vitest",
+    "prod": "dotenv -e .env -e .env.production -- node src/server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "dotenv": "^17.2.2",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "~1.9.1",
+    "pg": "^8.16.3",
+    "reflect-metadata": "^0.2.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "typeorm": "^0.3.27",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.24.8",
+    "@babel/core": "^7.24.7",
+    "@babel/node": "^7.2.2",
+    "@babel/plugin-proposal-decorators": "^7.24.7",
+    "@babel/preset-env": "^7.24.7",
+    "@babel/register": "^7.24.6",
+    "@eslint/css": "^0.11.0",
+    "@eslint/js": "^9.36.0",
+    "@eslint/json": "^0.13.2",
+    "@eslint/markdown": "^7.2.0",
+    "cross-env": "^10.1.0",
+    "dotenv-cli": "^10.0.0",
+    "eslint": "^9.36.0",
+    "eslint-plugin-import": "^2.29.1",
+    "nodemon": "^3.1.4",
+    "supertest": "^7.1.4",
+    "vitest": "^2.1.9"
+  }
+}
